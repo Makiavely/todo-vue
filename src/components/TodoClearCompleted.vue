@@ -1,3 +1,4 @@
+
 <template>
   <button v-if="showClearCompletedButton" @click="clearCompleted">Clear Completed</button>
 </template>
