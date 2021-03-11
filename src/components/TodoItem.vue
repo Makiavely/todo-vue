@@ -1,14 +1,5 @@
 <template>
  <div class="todo-item">
-<!--   <div class="todo-item-left">
-     <input type="checkbox" v-model="todo.completed">
-     <div v-if="!todo.editing" @dblclick="editTodo(todo)"
-          class="todo-item-label" :class="{ completed : todo.completed }">{{ todo.title }}</div>
-     <input v-else class="todo-item-edit" type="text"
-            v-model="todo.title" @blur="doneEdit(todo)" @keyup.enter="doneEdit(todo)"
-            @keyup.esc="cancelEdit(todo)" v-focus>
-   </div>-->
-
    <div class="todo-item-left">
      <input type="checkbox" v-model="completed" @change="doneEdit">
      <div v-if="!editing" @dblclick="editTodo"
@@ -17,9 +8,11 @@
             v-model="title" @blur="doneEdit" @keyup.enter="doneEdit"
             @keyup.esc="cancelEdit" v-focus>
    </div>
-
-   <div class="remove-item" @click="removeTodo(index)">
-     &times;
+   <div>
+     <button @click="pluralize">Plural</button>
+     <span class="remove-item" @click="removeTodo(index)">
+       &times;
+     </span>
    </div>
  </div>
 </template>
@@ -50,19 +43,19 @@ export default {
       'beforeEditCache': '',
     }
   },
+  created() {
+    eventBus.$on('pluralize', this.handlePluralize)
+  },
+  beforeDestroy() {
+    eventBus.$off('pluralize', this.handlePluralize)
+  },
   watch: {
     checkAll() {
-/*      if (this.checkAll) {
-        this.completed = true
-      } else {
-        this.completed = this.todo.completed
-      }*/
       this.completed = this.checkAll ? true : this.todo.completed
     }
   },
   directives: {
     focus: {
-      // directive definition
       inserted: function (el) {
         el.focus()
       }
@@ -70,12 +63,9 @@ export default {
   },
   methods: {
     removeTodo(index) {
-      this.$emit('removedTodo', index)
+      /*this.$emit('removedTodo', index)*/
+      eventBus.$emit('removedTodo', index)
     },
-/*    editTodo(todo) {
-      this.beforeEditCache = todo.title
-      todo.editing = true
-    },*/
     editTodo() {
       this.beforeEditCache = this.title
       this.editing = true
@@ -85,7 +75,8 @@ export default {
         this.title = this.beforeEditCache
       }
       this.editing = false
-      this.$emit('finishedEdit', {
+      /*this.$emit('finishedEdit', {*/
+      eventBus.$emit('finishedEdit', {
         'index' : this.index,
         'todo' : {
           'id' : this.id,
@@ -99,6 +90,21 @@ export default {
       this.title = this.beforeEditCache
       this.editing = false
     },
+    pluralize() {
+      eventBus.$emit('pluralize')
+    },
+    handlePluralize() {
+      this.title = this.title + 's'
+      eventBus.$emit('finishedEdit', {
+        'index' : this.index,
+        'todo' : {
+          'id' : this.id,
+          'title' : this.title,
+          'completed' : this.completed,
+          'editing' : this.editing,
+        }
+      })
+    }
   }
 }
 </script>

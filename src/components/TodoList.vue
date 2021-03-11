@@ -1,68 +1,57 @@
 <template>
   <div>
-    <input type="text" class="todo-input"
-           placeholder="What needs to be done" v-model="newTodo" @keyup.enter="addTodo">
-<!--    Todo list goes here-->
-<!--    <div v-for="todo in todos" :key="todo.id" class="todo-item">-->
-<!--    <div v-for="(todo, index) in todos" :key="todo.id" class="todo-item">-->
-
+    <input type="text" class="todo-input" placeholder="What needs to be done" v-model="newTodo" @keyup.enter="addTodo">
     <transition-group name="fade" enter-active-class="animated fadeInUp" leave-active-class="animated fadeOutDown">
-<!--    <div v-for="(todo, index) in todosFiltered" :key="todo.id" class="todo-item">-->
-      <todo-item v-for="(todo, index) in todosFiltered" :key="todo.id" :todo="todo" :index="index"
-                 :checkAll="!anyRemaining" @removedTodo="removeTodo" @finishedEdit="finishedEdit">
-<!--      <div class="todo-item-left">
-        <input type="checkbox" v-model="todo.completed">
-        <div v-if="!todo.editing" @dblclick="editTodo(todo)"
-             class="todo-item-label" :class="{ completed : todo.completed }">{{ todo.title }}</div>
-        <input v-else class="todo-item-edit" type="text"
-               v-model="todo.title" @blur="doneEdit(todo)" @keyup.enter="doneEdit(todo)"
-               @keyup.esc="cancelEdit(todo)" v-focus>
-&lt;!&ndash;        {{ todo.title }}&ndash;&gt;
-
-      </div>
-&lt;!&ndash;      {{ todo.title }}&ndash;&gt;
-      <div class="remove-item" @click="removeTodo(index)">
-        &times;
-      </div>-->
+      <todo-item v-for="todo in todosFiltered" :key="todo.id" :todo="todo" :checkAll="!anyRemaining">
+<!--                 :checkAll="!anyRemaining" @removedTodo="removeTodo" @finishedEdit="finishedEdit">-->
     </todo-item>
     </transition-group>
 
     <div class="extra-container">
-      <div><label><input type="checkbox" :checked="!anyRemaining" @change="checkAllTodos"> Check all </label></div>
-      <div>{{ remaining }} items left</div>
+<!--      <div><label><input type="checkbox" :checked="!anyRemaining" @change="checkAllTodos"> Check all </label></div>-->
+      <todo-check-all :anyRemaining="anyRemaining"></todo-check-all>
+<!--      <div>{{ remaining }} items left</div>-->
+      <todo-items-remaining :remaining="remaining"></todo-items-remaining>
     </div>
 
-
     <div class="extra-container">
-      <div>
+<!--      <div>
         <button :class="{ active: filter == 'all' }" @click="filter = 'all'">All</button>
         <button :class="{ active: filter == 'active' }" @click="filter = 'active'">Active</button>
         <button :class="{ active: filter == 'completed' }" @click="filter = 'completed'">Completed</button>
-      </div>
+      </div>-->
+
+      <todo-filtered></todo-filtered>
 
       <div>
-<!--        Clear Completed-->
         <transition name="fade">
-        <button v-if="showClearCompletedButton" @click="clearCompleted">Clear Completed</button>
+<!--          <button v-if="showClearCompletedButton" @click="clearCompleted">Clear Completed</button>-->
+          <todo-clear-completed></todo-clear-completed>
         </transition>
       </div>
-    </div>
-
+    </div> <!-- end extra-container -->
   </div>
 </template>
 
 <script>
 import TodoItem from './TodoItem'
+import TodoItemsRemaining from './TodoItemsRemaining'
+import TodoCheckAll from './TodoCheckAll'
+import TodoFiltered from './TodoFiltered'
+import TodoClearCompleted from './TodoClearCompleted'
 
 export default {
   name: 'todo-list',
   components: {
     TodoItem,
+    TodoItemsRemaining,
+    TodoCheckAll,
+    TodoFiltered,
+    TodoClearCompleted,
   },
 
   data () {
     return {
-      /*msg: 'Welcome to Your Vue.js App'*/
       newTodo: '',
       idForTodo: 3,
       beforeEditCache: '',
@@ -83,19 +72,33 @@ export default {
       ]
     }
   },
+  created() {
+    eventBus.$on('removedTodo', (index) => this.removeTodo(index))
+    eventBus.$on('finishedEdit', (data) => this.removeEdit(data))
+    eventBus.$on('checkAllChanged', (checked) => this.checkAllTodos(checked))
+    eventBus.$on('filterChanged', (filter) => this.filter = filter)
+    eventBus.$on('clearCompletedTodos', () => this.clearCompleted())
+  },
+  beforeDestroy() {
+    eventBus.$off('removedTodo', (index) => this.removeTodo(index))
+    eventBus.$off('finishedEdit', (data) => this.removeEdit(data))
+    eventBus.$off('checkAllChanged', (checked) => this.checkAllTodos(checked))
+    eventBus.$off('filterChanged', (filter) => this.filter = filter)
+    eventBus.$off('clearCompletedTodos', () => this.clearCompleted())
+  },
   computed: {
     remaining() {
       return this.todos.filter(todo => !todo.completed).length
     },
     anyRemaining() {
-      return this.remaining !== 0
+      return this.remaining != 0
     },
     todosFiltered() {
-      if (this.filter === 'all') {
+      if (this.filter == 'all') {
         return this.todos
-      } else if (this.filter === 'active') {
+      } else if (this.filter == 'active') {
         return this.todos.filter(todo => !todo.completed)
-      } else if (this.filter === 'completed') {
+      } else if (this.filter == 'completed') {
         return this.todos.filter(todo => todo.completed)
       }
 
@@ -103,23 +106,14 @@ export default {
     },
     showClearCompletedButton() {
       return this.todos.filter(todo => todo.completed).length > 0
-    },
-  },
-/*  directives: {
-    focus: {
-      // directive definition
-      inserted: function (el) {
-        el.focus()
-      }
     }
-  },*/
+  },
   methods: {
     addTodo() {
       if (this.newTodo.trim().length == 0) {
         return
       }
 
-      /*alert('adding')*/
       this.todos.push({
         id: this.idForTodo,
         title: this.newTodo,
@@ -129,22 +123,8 @@ export default {
       this.newTodo = ''
       this.idForTodo++
     },
-/*    editTodo(todo) {
-      this.beforeEditCache = todo.title
-      /!*alert('double clicked')*!/
-      todo.editing = true
-    },
-    doneEdit(todo) {
-      if (todo.title.trim() == '') {
-        todo.title = this.beforeEditCache
-      }
-      todo.editing = false
-    },
-    cancelEdit(todo) {
-      todo.title = this.beforeEditCache
-      todo.editing = false
-    },*/
-    removeTodo(index) {
+    removeTodo(id) {
+      const index = this.todos.findIndex((item) => item.id == id)
       this.todos.splice(index, 1)
     },
     checkAllTodos() {
@@ -154,7 +134,8 @@ export default {
       this.todos = this.todos.filter(todo => !todo.completed)
     },
     finishedEdit(data) {
-      this.todos.splice(data.index, 1, data.todo)
+      const index = this.todos.findIndex((item) => item.id == data.id)
+      this.todos.splice(index, 1, data)
     }
   }
 }
