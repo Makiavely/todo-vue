@@ -23,10 +23,10 @@ export default {
       type: Object,
       required: true,
     },
-    index: {
-      type: Number,
-      required: true,
-    },
+   // index: {            КОГДА-ТО ПРОПУСТИЛ ЭТО ИЗМЕНЕНИЕ
+   //   type: Number,
+   //   required: true,
+  //  },
     checkAll: {
       type: Boolean,
       required: true,
