@@ -48,7 +48,12 @@ export default {
     eventBus.$off('pluralize', this.handlePluralize)
   },
   watch: {
-    checkAll() {
+    checkAll() 
+       // if (this.checkAll) {
+      //   this.completed = true
+      // } else {
+      //   this.completed = this.todo.completed
+      // }
       this.completed = this.checkAll ? true : this.todo.completed
     }
   },
