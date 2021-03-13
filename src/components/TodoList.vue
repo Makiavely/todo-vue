@@ -2,59 +2,44 @@
   <div>
     <input type="text" class="todo-input" placeholder="What needs to be done" v-model="newTodo" @keyup.enter="addTodo">
     <transition-group name="fade" enter-active-class="animated fadeInUp" leave-active-class="animated fadeOutDown">
-      <todo-item v-for="todo in todosFiltered" :key="todo.id" :todo="todo" :checkAll="!anyRemaining">
-<!--                 :checkAll="!anyRemaining" @removedTodo="removeTodo" @finishedEdit="finishedEdit">-->
-    </todo-item>
+      <todo-item v-for="todo in todosFiltered" :key="todo.id" :todo="todo" :checkAll="!anyRemaining" @removedTodo="removeTodo" @finishedEdit="finishedEdit">
+      </todo-item>
     </transition-group>
 
     <div class="extra-container">
-<!--      <div><label><input type="checkbox" :checked="!anyRemaining" @change="checkAllTodos"> Check all </label></div>-->
-      <todo-check-all :anyRemaining="anyRemaining"></todo-check-all>
-<!--      <div>{{ remaining }} items left</div>-->
-      <todo-items-remaining :remaining="remaining"></todo-items-remaining>
+      <div><label><input type="checkbox" :checked="!anyRemaining" @change="checkAllTodos"> Check All</label></div>
+      <div>{{ remaining }} items left</div>
     </div>
 
     <div class="extra-container">
-<!--      <div>
+      <div>
         <button :class="{ active: filter == 'all' }" @click="filter = 'all'">All</button>
         <button :class="{ active: filter == 'active' }" @click="filter = 'active'">Active</button>
         <button :class="{ active: filter == 'completed' }" @click="filter = 'completed'">Completed</button>
-      </div>-->
-
-      <todo-filtered></todo-filtered>
+      </div>
 
       <div>
         <transition name="fade">
-<!--          <button v-if="showClearCompletedButton" @click="clearCompleted">Clear Completed</button>-->
-          <todo-clear-completed></todo-clear-completed>
+          <button v-if="showClearCompletedButton" @click="clearCompleted">Clear Completed</button>
         </transition>
       </div>
-    </div> <!-- end extra-container -->
+
+    </div>
   </div>
 </template>
 
 <script>
 import TodoItem from './TodoItem'
-import TodoItemsRemaining from './TodoItemsRemaining'
-import TodoCheckAll from './TodoCheckAll'
-import TodoFiltered from './TodoFiltered'
-import TodoClearCompleted from './TodoClearCompleted'
 
 export default {
   name: 'todo-list',
   components: {
     TodoItem,
-    TodoItemsRemaining,
-    TodoCheckAll,
-    TodoFiltered,
-    TodoClearCompleted,
   },
-
   data () {
     return {
       newTodo: '',
       idForTodo: 3,
-      beforeEditCache: '',
       filter: 'all',
       todos: [
         {
@@ -71,20 +56,6 @@ export default {
         },
       ]
     }
-  },
-  created() {
-    eventBus.$on('removedTodo', (index) => this.removeTodo(index))
-    eventBus.$on('finishedEdit', (data) => this.removeEdit(data))
-    eventBus.$on('checkAllChanged', (checked) => this.checkAllTodos(checked))
-    eventBus.$on('filterChanged', (filter) => this.filter = filter)
-    eventBus.$on('clearCompletedTodos', () => this.clearCompleted())
-  },
-  beforeDestroy() {
-    eventBus.$off('removedTodo', (index) => this.removeTodo(index))
-    eventBus.$off('finishedEdit', (data) => this.removeEdit(data))
-    eventBus.$off('checkAllChanged', (checked) => this.checkAllTodos(checked))
-    eventBus.$off('filterChanged', (filter) => this.filter = filter)
-    eventBus.$off('clearCompletedTodos', () => this.clearCompleted())
   },
   computed: {
     remaining() {
@@ -143,6 +114,7 @@ export default {
 
 <style lang="scss">
 @import url("https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css");
+
 .todo-input {
   width: 100%;
   padding: 10px 18px;
@@ -170,7 +142,7 @@ export default {
   }
 }
 
-.todo-item-left { //later
+.todo-item-left { // later
   display: flex;
   align-items: center;
 }
@@ -236,5 +208,4 @@ button {
 .fade-enter, .fade-leave-to {
   opacity: 0;
 }
-
 </style>
