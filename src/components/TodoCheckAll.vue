@@ -1,6 +1,7 @@
 <template>
-  <div><label><input type="checkbox" :checked="!anyRemaining"
-  @change="allChecked">Check All</label></div>
+  <!--  <div><label><input type="checkbox" :checked="!anyRemaining" @change="checkAllTodos"> Check All</label></div>-->
+<!--  <div><label><input type="checkbox" :checked="!anyRemaining"> Check All</label></div>-->
+  <div><label><input type="checkbox" :checked="!anyRemaining" @change="allChecked"> Check All</label></div>
 </template>
 
 <script>
