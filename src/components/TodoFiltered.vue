@@ -20,17 +20,26 @@ export default {
       required: true,
     }
   },*/
-  data() {
+/*  data() {
     return {
       'filter': 'all',
     }
+  },*/
+  computed: {
+    filter() {
+      return this.$store.state.filter
+    }
   },
   methods: {
-    /*allChecked() {*/
+  //  allChecked() {
     changeFilter(filter) {
-      this.filter = filter
-      /*eventBus.$emit('checkAllChanged', this.anyRemaining)*/
-      eventBus.$emit('filterChanged', filter)
+      this.$store.dispatch('updateFilter', filter)
+  //    this.$store.commit('updateFilter', filter)
+  //    this.filter = filter
+  //    this.$store.state.filter = filter
+
+  //    eventBus.$emit('checkAllChanged', this.anyRemaining)
+  //    eventBus.$emit('filterChanged', filter)
     }
   }
 }

@@ -66,8 +66,12 @@ export default {
   },
   methods: {
     removeTodo(id) {
+      this.$store.dispatch('deleteTodo',id)
+  //    this.$store.commit('deleteTodo',id)
       /*this.$emit('removedTodo', id)*/
-      eventBus.$emit('removedTodo', id)
+      /*eventBus.$emit('removedTodo', id)*/
+      /*const index = this.$store.state.todos.findIndex((item) => item.id == id)
+      this.$store.state.todos.splice(index, 1)*/
     },
     editTodo() {
       this.beforeEditCache = this.title
@@ -78,13 +82,34 @@ export default {
         this.title = this.beforeEditCache
       }
       this.editing = false
-      /*this.$emit('finishedEdit', {*/
-      eventBus.$emit('finishedEdit', {
+      this.$store.dispatch('updateTodo',{
+  //    this.$store.commit('updateTodo',{
+          'id': this.id,
+          'title': this.title,
+          'completed': this.completed,
+          'editing': this.editing,
+      })
+
+/*
+      const index = this.$store.state.todos.findIndex((item) => item.id == this.id)
+      this.$store.state.todos.splice(index, 1, {
+  //    const index = this.$store.state.todos.findIndex((item) => item.id == data.id)
+  //    this.$store.state.todos.splice(index, 1, data)
         'id': this.id,
         'title': this.title,
         'completed': this.completed,
         'editing': this.editing,
       })
+*/
+
+      /*this.$emit('finishedEdit', {*/
+/*      eventBus.$emit('finishedEdit', {
+        'id': this.id,
+        'title': this.title,
+        'completed': this.completed,
+        'editing': this.editing,
+      })*/
+
 
     },
     cancelEdit() {
@@ -96,12 +121,22 @@ export default {
     },
     handlePluralize() {
       this.title = this.title + 's'
-      eventBus.$emit('finishedEdit', {
+  //    const index = this.$store.state.todos.findIndex((item) => item.id == data.id)
+      const index = this.$store.state.todos.findIndex((item) => item.id == this.id)
+      this.$store.state.todos.splice(index, 1, {
         'id': this.id,
         'title': this.title,
         'completed': this.completed,
         'editing': this.editing,
       })
+
+/*      eventBus.$emit('finishedEdit', {
+        'id': this.id,
+        'title': this.title,
+        'completed': this.completed,
+        'editing': this.editing,
+      })*/
+
     }
   }
 }
