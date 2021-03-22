@@ -47,63 +47,18 @@ export default {
     return {
       newTodo: '',
       idForTodo: 3,
-/*      filter: 'all',
-      todos: [
-        {
-          'id': 1,
-          'title': 'Finish Vue Screencast',
-          'completed': false,
-          'editing': false,
-        },
-        {
-          'id': 2,
-          'title': 'Take over world',
-          'completed': false,
-          'editing': false,
-        },
-      ]*/
     };
   },
-/*  created() {
-    eventBus.$on('removedTodo', (index) => this.removeTodo(index))
-    eventBus.$on('finishedEdit', (data) => this.finishedEdit(data))
-    eventBus.$on('checkAllChanged', (checked) => this.checkAllTodos(checked))
-    eventBus.$on('filterChanged', (filter) => this.$store.state.filter = filter)
-    eventBus.$on('clearCompletedTodos', () => this.clearCompleted())
+  created() {
+    this.$store.dispatch('retrieveTodos')
   },
-  beforeDestroy() {
-    eventBus.$off('removedTodo', (index) => this.removeTodo(index))
-    eventBus.$off('finishedEdit', (data) => this.finishedEdit(data))
-    eventBus.$off('checkAllChanged', (checked) => this.checkAllTodos(checked))
-    eventBus.$off('filterChanged', (filter) => this.$store.state.filter = filter)
-    eventBus.$off('clearCompletedTodos', () => this.clearCompleted())
-  },*/
   computed: {
-/*    remaining() {
-      return this.$store.getters.remaining
-      //    return this.$store.state.todos.filter(todo => !todo.completed).length
-    },*/
     anyRemaining() {
-  //    return this.remaining != 0
       return this.$store.getters.anyRemaining
     },
     todosFiltered() {
       return this.$store.getters.todosFiltered
-
-     /* if (this.$store.state.filter == 'all') {
-        return this.$store.state.todos
-      } else if (this.$store.state.filter == 'active') {
-        return this.$store.state.todos.filter(todo => !todo.completed)
-      } else if (this.$store.state.filter == 'completed') {
-        return this.$store.state.todos.filter(todo => todo.completed)
-      }
-
-      return this.$store.state.todos*/
     },
-/*    showClearCompletedButton() {
-  //    return this.$store.state.todos.filter(todo => todo.completed).length > 0
-      return this.$store.getters.showClearCompletedButton
-    }*/
   },
   methods: {
     addTodo() {
@@ -112,36 +67,13 @@ export default {
       }
 
       this.$store.dispatch('addTodo', {
-  //    this.$store.commit('addTodo', {
         id: this.idForTodo,
         title: this.newTodo,
-  //      completed: false,
-  //      editing: false,
       })
-
-/*      this.$store.state.todos.push({
-        id: this.idForTodo,
-        title: this.newTodo,
-        completed: false,
-      })*/
 
       this.newTodo = "";
       this.idForTodo++;
     },
-/*    removeTodo(id) {
-      const index = this.$store.state.todos.findIndex((item) => item.id == id)
-      this.$store.state.todos.splice(index, 1)
-    },*/
-/*    checkAllTodos() {
-      this.$store.state.todos.forEach(todo => (todo.completed = event.target.checked));
-    },
-    clearCompleted() {
-      this.$store.state.todos = this.$store.state.todos.filter(todo => !todo.completed);
-    },
-    finishedEdit(data) {
-      const index = this.$store.state.todos.findIndex((item) => item.id == data.id);
-      this.$store.state.todos.splice(index, 1, data);
-    }*/
   }
 };
 </script>
