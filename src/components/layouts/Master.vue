@@ -1,29 +1,17 @@
 <template>
   <div id="app">
     <ul class="nav">
-<!--      <li><a href="/">Home</a></li>
-      <li><a href="/">About</a></li>
-      <li><a href="/">Login</a></li>
-      <li><a href="/">Register</a></li>-->
-
-<!--      <li><router-link to="/">Home</router-link></li>
-      <li><router-link to="/todo">App</router-link></li>
-      <li><router-link to="/about">About</router-link></li>
-      <li><router-link to="/login">Login</router-link></li>
-      <li><router-link to="/register">Register</router-link></li>-->
-
-
       <li><router-link :to="{ name: 'home' }">Home</router-link></li>
       <li><router-link :to="{ name: 'todo' }">App</router-link></li>
       <li><router-link :to="{ name: 'about' }">About</router-link></li>
-      <li><router-link :to="{ name: 'login' }">Login</router-link></li>
-      <li><router-link :to="{ name: 'register' }">Register</router-link></li>
+<!--      <li><router-link :to="{ name: 'login' }">Login</router-link></li>
+      <li><router-link :to="{ name: 'register' }">Register</router-link></li>-->
+
+      <li v-if="!loggedIn"><router-link :to="{ name: 'login' }">Login</router-link></li>
+      <li v-if="!loggedIn"><router-link :to="{ name: 'register' }">Register</router-link></li>
+      <li v-if="loggedIn"><router-link :to="{ name: 'logout' }">Logout</router-link></li>
 
     </ul>
-
-<!--    <div>
-      Content for each page goes here
-    </div>-->
 
     <router-view></router-view>
   </div>
@@ -31,6 +19,11 @@
 
 <script>
 export default {
+  computed: {
+    loggedIn() {
+      return this.$store.getters.loggedIn
+    }
+  }
 }
 </script>
 
